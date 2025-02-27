@@ -2,6 +2,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using soqba.ViewModels;
+using soqba.Views;
 
 namespace soqba;
 
@@ -9,7 +10,17 @@ public class ViewLocator : IDataTemplate
 {
     public Control? Build(object? param)
     {
-        if (param is null)
+        if (param is null) return null;
+
+        return param switch
+        {
+            TextQuestionViewModel => new TextQuestionView(),
+            InputQuestionViewModel => new InputQuestionView(),
+            SelectQuestionViewModel => new SelectQuestionView(),
+            _ => new TextBlock { Text = "Not Found" },
+        };
+
+        /* if (param is null)
             return null;
 
         var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
@@ -20,7 +31,7 @@ public class ViewLocator : IDataTemplate
             return (Control)Activator.CreateInstance(type)!;
         }
 
-        return new TextBlock { Text = "Not Found: " + name };
+        return new TextBlock { Text = "Not Found: " + name }; */
     }
 
     public bool Match(object? data)

@@ -35,7 +35,9 @@
 // select is typical selecting question with some choices (yes/no)
 // 0 1 [min count of selected choices]
 // 1 1 [max count of selected choices]
-// 2 1 [choices number]
+// 2 4 [size of text]
+// 6 [size of text] [tip text]
+// 6+[size of text] 1 [choices number]
 // -- for every choice
 // n 4 [length of text]
 // n+4 [length of text] [text of choice in UTF-8]
@@ -196,7 +198,7 @@ namespace Program
         {
             List<byte> result = new ();
 
-            if(!Console.IsInputRedirected) Console.Error.WriteLine("Format:\nmin count of selected choices\nmax count of selected choices\nchoices text");
+            if(!Console.IsInputRedirected) Console.Error.WriteLine("Format:\nmin count of selected choices\nmax count of selected choices\nquestion text\nchoices text");
 
             string? input = inputReader.ReadLine();
             lineCount++;
@@ -216,13 +218,18 @@ namespace Program
                 return [];
             }
 
+            input = inputReader.ReadLine();
+            lineCount++;
+            if(input is null) return [];
+            string tipText = input;
+
             int choicesCount = 0;
             while(!string.IsNullOrWhiteSpace((input = inputReader.ReadLine())))
             {
                 choicesCount++;
                 lineCount++;
 
-                result.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(input.Length)));
+                result.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(Encoding.UTF8.GetByteCount(input))));
                 result.AddRange(Encoding.UTF8.GetBytes(input));
             }
             lineCount++;
@@ -237,9 +244,11 @@ namespace Program
                     return [];
                 }
 
-            return [..BitConverter.GetBytes(IPAddress.HostToNetworkOrder(min)),
-                    ..BitConverter.GetBytes(IPAddress.HostToNetworkOrder(max)),
-                    ..BitConverter.GetBytes(IPAddress.HostToNetworkOrder(choicesCount)),
+            return [(byte)min,
+                    (byte)max,
+                    ..BitConverter.GetBytes(IPAddress.HostToNetworkOrder(Encoding.UTF8.GetByteCount(tipText))),
+                    ..Encoding.UTF8.GetBytes(tipText),
+                    (byte)choicesCount,
                     ..result];
         }
     }

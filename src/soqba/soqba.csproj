@@ -20,5 +20,6 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageVersion Include="System.IO.Hashing" Version="9.0.2" />
   </ItemGroup>
 </Project>
