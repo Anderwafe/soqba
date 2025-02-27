@@ -36,11 +36,9 @@ public partial class MainViewModel : ViewModelBase
 
     public void Initialize(Stream? inputStream)
     {
-        Console.Error.WriteLine("Initializing");
         if(inputStream is null)
         {
             Questions = [FallbackValue];
-            Console.Error.WriteLine("Fallback");
             return;
         }
 
@@ -51,7 +49,6 @@ public partial class MainViewModel : ViewModelBase
         if(!string.Equals(new string(Encoding.UTF8.GetChars(bytebuffer[..9])), "SOQBAFORM"))
         {
             Questions = [FallbackValue];
-            Console.Error.WriteLine("Magic invalid - " + new string(Encoding.UTF8.GetChars(bytebuffer[..9])));
             return;
         }
         /* int readed = 0;
@@ -65,39 +62,32 @@ public partial class MainViewModel : ViewModelBase
         while(true)
         {
             int questType = inputStream.ReadByte();
-            Console.Error.WriteLine("Question type: " + questType);
             if(questType == -1) break;
             inputStream.ReadExactly(bytebuffer, 0, 32);
             switch((QuestionType)questType)
             {
                 case QuestionType.Text:
                 {
-                    Console.Error.WriteLine("Text");
                     /* readed = 0;
                     while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                     inputStream.ReadExactly(bytebuffer, 0, 4);
 
                     int size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
-                    Console.Error.WriteLine(size);
                     inputStream.ReadExactly(bytebuffer, 0, size);
-                    Console.Error.WriteLine(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
                     Questions.Add(new TextQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size]))));
                 } break;
                 case QuestionType.Input:
                 {
-                    Console.Error.WriteLine("Input");
                     /* readed = 0;
                     while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                     inputStream.ReadExactly(bytebuffer, 0, 4);
 
                     int size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
                     inputStream.ReadExactly(bytebuffer, 0, size);
-                    Console.Error.WriteLine(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
                     Questions.Add(new InputQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size]))));
                 } break;
                 case QuestionType.Select:
                 {
-                    Console.Error.WriteLine("Select");
                     int minCount = inputStream.ReadByte();
                     int maxCount = inputStream.ReadByte();
 
@@ -119,7 +109,6 @@ public partial class MainViewModel : ViewModelBase
                         inputStream.ReadExactly(bytebuffer, 0, size);
                         varis.Add(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
                     }
-                    Console.Error.WriteLine($"{minCount} - {maxCount}; {tip}; {string.Join(';', varis)}");
 
                     Questions.Add(new SelectQuestionViewModel((minCount, maxCount), tip, varis.ToArray()));
                 } break;

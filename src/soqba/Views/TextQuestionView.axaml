@@ -7,6 +7,6 @@
              x:Class="soqba.Views.TextQuestionView"
              x:DataType="vm:TextQuestionViewModel">
   <Border>
-    <TextBlock Text="{Binding Text}" />
+    <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
   </Border>
 </UserControl>

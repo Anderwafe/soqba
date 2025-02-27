@@ -1,7 +1,11 @@
 ﻿using Android.App;
 using Android.Content.PM;
+using Android.OS;
+using AndroidX.Core.Content;
 using Avalonia;
 using Avalonia.Android;
+using Java.Net;
+using Java.Security;
 
 namespace soqba.Android;
 
@@ -13,8 +17,4 @@ namespace soqba.Android;
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
-    protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
-    {
-        return base.CustomizeAppBuilder(builder);
-    }
 }

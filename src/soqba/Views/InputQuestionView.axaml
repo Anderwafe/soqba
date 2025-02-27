@@ -8,8 +8,8 @@
              x:DataType="vm:InputQuestionViewModel">
     <Border>
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding Tip}" />
-            <TextBox Text="{Binding UserInput}" AcceptsReturn="True"/>
+            <TextBlock Text="{Binding Tip}" TextWrapping="Wrap"/>
+            <TextBox Text="{Binding UserInput}" TextWrapping="Wrap" AcceptsReturn="True"/>
         </StackPanel>
     </Border>
     

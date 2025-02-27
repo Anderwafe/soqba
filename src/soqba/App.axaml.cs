@@ -11,6 +11,8 @@ using System.IO;
 using Avalonia.Rendering.Composition.Transport;
 using System;
 using System.Diagnostics;
+using System.Net;
+using Avalonia.Remote.Protocol;
 
 namespace soqba;
 
@@ -31,35 +33,16 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-
-            if(File.Exists("/home/anderwafe/Programming/Gitted/Anderwafe/soqba/src/soqba/output.sor"))
+            HttpClient client = new HttpClient();
+            var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/raw/refs/heads/main/src/soqba/output.sor");
+            try
             {
-                Console.Error.WriteLine("Reading file");
-                try
-                {
-                    input = File.OpenRead("/home/anderwafe/Programming/Gitted/Anderwafe/soqba/src/soqba/output.sor");
-                }
-                catch
-                {
-                    Console.Error.WriteLine("Error");
-                    input = null;
-                }
+                buf.Wait();
+                input = buf.Result;
             }
-            else
+            catch
             {
-                Console.Error.WriteLine("Reading github");
-                HttpClient client = new HttpClient();
-                var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/src/soqba/output.sor");
-                try
-                {
-                    buf.Wait();
-                    input = buf.Result;
-                }
-                catch
-                {
-                    Console.Error.WriteLine("error");
-                    input = null;
-                }
+                input = null;
             }
 
             desktop.MainWindow = new MainWindow
@@ -69,15 +52,13 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-                Console.Error.WriteLine("Reading github");
-            HttpClient client = new HttpClient();
-            var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/src/soqba/output.sor");
             try
             {
-                buf.Wait();
-                input = buf.Result;
+                HttpClient client = new HttpClient(new SocketsHttpHandler());
+                var response = client.Send(new HttpRequestMessage(HttpMethod.Get, "https://github.com/Anderwafe/soqba/raw/refs/heads/main/src/soqba/output.sor"));
+                input = response.Content.ReadAsStream();
             }
-            catch
+            catch(Exception e)
             {
                 input = null;
             }
