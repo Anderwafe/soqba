@@ -34,7 +34,7 @@ public partial class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             //DisableAvaloniaDataAnnotationValidation();
             HttpClient client = new HttpClient();
-            var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/raw/refs/heads/main/src/soqba/output.sor");
+            var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/raw/refs/heads/main/output.sor");
             try
             {
                 buf.Wait();
@@ -55,7 +55,7 @@ public partial class App : Application
             try
             {
                 HttpClient client = new HttpClient(new SocketsHttpHandler());
-                var response = client.Send(new HttpRequestMessage(HttpMethod.Get, "https://github.com/Anderwafe/soqba/raw/refs/heads/main/src/soqba/output.sor"));
+                var response = client.Send(new HttpRequestMessage(HttpMethod.Get, "https://github.com/Anderwafe/soqba/raw/refs/heads/main/output.sor"));
                 input = response.Content.ReadAsStream();
             }
             catch(Exception e)
