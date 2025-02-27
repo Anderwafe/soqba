@@ -11,16 +11,6 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-        AddHandler(KeyUpEvent, handler, Avalonia.Interactivity.RoutingStrategies.Direct | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
-    }
-
-    private void handler(Object? sender, KeyEventArgs args)
-    {
-        if(DataContext is not null)
-        {
-            if(DataContext is MainViewModel mvm)
-                mvm.CopyClipboardCommand.NotifyCanExecuteChanged();
-        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

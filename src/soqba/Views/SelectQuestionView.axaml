@@ -8,11 +8,18 @@
              x:DataType="vm:SelectQuestionViewModel">
   <Border>
     <StackPanel Orientation="Vertical">
-      <TextBlock Text="{Binding Tip}" />
+      <TextBlock >
+        <Run Text="{Binding Tip}"/>
+        <Run Text=" - [" FontStyle="Italic"/>
+        <Run Text="{Binding CanChooseMin}" FontStyle="Oblique"/>
+        <Run Text="; " FontStyle="Italic"/>
+        <Run Text="{Binding CanChooseMax}" FontStyle="Oblique"/>
+        <Run Text="]" FontStyle="Italic"/>
+      </TextBlock>
       <ItemsControl ItemsSource="{Binding Choices}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <CheckBox IsChecked="{Binding IsChoosen}" Content="{Binding Text}" />
+            <ToggleButton Padding="5" IsChecked="{Binding IsChoosen,Mode=TwoWay}" Content="{Binding Text}"/>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

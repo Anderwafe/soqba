@@ -32,7 +32,7 @@ public partial class App : Application
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            DisableAvaloniaDataAnnotationValidation();
+            //DisableAvaloniaDataAnnotationValidation();
             HttpClient client = new HttpClient();
             var buf = client.GetStreamAsync("https://github.com/Anderwafe/soqba/raw/refs/heads/main/src/soqba/output.sor");
             try
@@ -60,6 +60,7 @@ public partial class App : Application
             }
             catch(Exception e)
             {
+                Debug.WriteLine(e);
                 input = null;
             }
             singleViewPlatform.MainView = new MainView
@@ -72,12 +73,11 @@ public partial class App : Application
 
         input?.Dispose();
         input?.Close();
-        input = null;
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void DisableAvaloniaDataAnnotationValidation()
+    /* private void DisableAvaloniaDataAnnotationValidation()
     {
         // Get an array of plugins to remove
         var dataValidationPluginsToRemove =
@@ -88,5 +88,5 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
-    }
+    } */
 }

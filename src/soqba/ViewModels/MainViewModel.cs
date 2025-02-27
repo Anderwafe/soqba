@@ -44,15 +44,12 @@ public partial class MainViewModel : ViewModelBase
 
         byte[] bytebuffer = new byte[4096];
 
-        //Console.Error.WriteLine(sr.Read(charbuffer, 0, 9));
         inputStream.ReadExactly(bytebuffer, 0, 9);
         if(!string.Equals(new string(Encoding.UTF8.GetChars(bytebuffer[..9])), "SOQBAFORM"))
         {
             Questions = [FallbackValue];
             return;
         }
-        /* int readed = 0;
-        while((readed += inputStream.Read(bytebuffer, readed, 8-readed)) != 8){} */
         inputStream.ReadExactly(bytebuffer, 0, 8);
 
         long crc = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(bytebuffer, 0));
@@ -64,35 +61,32 @@ public partial class MainViewModel : ViewModelBase
             int questType = inputStream.ReadByte();
             if(questType == -1) break;
             inputStream.ReadExactly(bytebuffer, 0, 32);
+            ViewModelBase? vmb = null;
             switch((QuestionType)questType)
             {
                 case QuestionType.Text:
                 {
-                    /* readed = 0;
-                    while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                     inputStream.ReadExactly(bytebuffer, 0, 4);
 
                     int size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
                     inputStream.ReadExactly(bytebuffer, 0, size);
-                    Questions.Add(new TextQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size]))));
+                    vmb = new TextQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
+                    Questions.Add(vmb);
                 } break;
                 case QuestionType.Input:
                 {
-                    /* readed = 0;
-                    while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                     inputStream.ReadExactly(bytebuffer, 0, 4);
 
                     int size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
                     inputStream.ReadExactly(bytebuffer, 0, size);
-                    Questions.Add(new InputQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size]))));
+                    vmb = new InputQuestionViewModel(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
+                    Questions.Add(vmb);
                 } break;
                 case QuestionType.Select:
                 {
                     int minCount = inputStream.ReadByte();
                     int maxCount = inputStream.ReadByte();
 
-                    /* readed = 0;
-                    while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                     inputStream.ReadExactly(bytebuffer, 0, 4);
                     int size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
                     inputStream.ReadExactly(bytebuffer, 0, size);
@@ -102,21 +96,21 @@ public partial class MainViewModel : ViewModelBase
                     List<string> varis = new List<string>(count);
                     while(count-- > 0)
                     {
-                        /* readed = 0;
-                        while((readed += inputStream.Read(bytebuffer, readed, 4-readed)) != 4){} */
                         inputStream.ReadExactly(bytebuffer, 0, 4);
                         size = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytebuffer, 0));
                         inputStream.ReadExactly(bytebuffer, 0, size);
                         varis.Add(new string(Encoding.UTF8.GetChars(bytebuffer[..size])));
                     }
-
-                    Questions.Add(new SelectQuestionViewModel((minCount, maxCount), tip, varis.ToArray()));
+                    vmb = new SelectQuestionViewModel((minCount, maxCount), tip, varis.ToArray());
+                    Questions.Add(vmb);
                 } break;
                 default:
                 {
                     Questions.Add(new TextQuestionViewModel("OOpsie..."));
                 } break;
             }
+            if(vmb is not null)
+                vmb.PropertyChanged += (s,e) => CopyClipboardCommand.NotifyCanExecuteChanged();
         }
     }
 
